@@ -12,18 +12,6 @@
       font-family: Arial, sans-serif;
     }
 
-    #enableSound {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      z-index: 9999;
-      font-size: 30px;
-      padding: 12px 20px;
-      border-radius: 12px;
-      border: 0;
-      cursor: pointer;
-    }
-
     #alert {
       position: absolute;
       left: 50%;
@@ -81,8 +69,6 @@
   </style>
 </head>
 <body>
-  <button id="enableSound">Enable Sound</button>
-
   <div id="alert">
     <div class="emoji" id="emoji"></div>
     <div class="name" id="name"></div>
@@ -93,28 +79,7 @@
 
   <script>
     const alertBox = document.getElementById("alert");
-    const enableSoundButton = document.getElementById("enableSound");
-
     let lastSeenId = localStorage.getItem("lastAlertId");
-    let soundEnabled = localStorage.getItem("soundEnabled") === "true";
-
-    if (soundEnabled) {
-      enableSoundButton.style.display = "none";
-    }
-
-    enableSoundButton.addEventListener("click", async () => {
-      try {
-        const testAudio = new Audio("/sounds/anything.mp3");
-        testAudio.volume = 0.05;
-        await testAudio.play();
-
-        soundEnabled = true;
-        localStorage.setItem("soundEnabled", "true");
-        enableSoundButton.style.display = "none";
-      } catch (err) {
-        console.log("Could not enable sound:", err);
-      }
-    });
 
     const optionMessages = {
       anything: { emoji: "💸", text: "Thanks for supporting the stream!" },
@@ -133,8 +98,6 @@
     };
 
     function playSound(option, amount) {
-      if (!soundEnabled) return;
-
       let soundFile = optionSounds[option] || optionSounds.anything;
 
       if (amount >= 50) {
@@ -145,7 +108,10 @@
 
       const audio = new Audio(soundFile);
       audio.volume = 1.0;
-      audio.play().catch(err => console.log("Sound blocked:", err));
+
+      audio.play()
+        .then(() => console.log("PLAYING:", soundFile))
+        .catch(err => console.log("Sound blocked:", err));
     }
 
     function showAlert(data) {
@@ -171,7 +137,10 @@
       }
 
       alertBox.classList.add("show");
-      setTimeout(() => alertBox.classList.remove("show"), 10000);
+
+      setTimeout(() => {
+        alertBox.classList.remove("show");
+      }, 10000);
     }
 
     async function checkAlert() {
