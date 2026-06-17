@@ -1,164 +1,225 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8" />
-  <style>
-    html, body {
-      margin: 0;
-      width: 100%;
-      height: 100%;
-      background: transparent;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
+<script>
+  const alertBox = document.getElementById("alert");
+  let lastSeenId = localStorage.getItem("lastAlertId");
+
+  const optionMessages = {
+    anything: { emoji: "💸", text: "Thanks for supporting the stream!" },
+    redstripe: { emoji: "🍺", text: "Mans now buying some Red Stripe, thank you!" },
+    equipment: { emoji: "🎥", text: "Thank you for helping upgrade the setup g!" },
+    giveaways: { emoji: "🎁", text: "This is going towards giveaways!" },
+    charity: { emoji: "❤️", text: "This is going to the charity pot!" }
+  };
+
+  const sounds = {
+    anything: new Audio("/sounds/anything.mp3"),
+    redstripe: new Audio("/sounds/beer.mp3"),
+    equipment: new Audio("/sounds/equipment.mp3"),
+    giveaways: new Audio("/sounds/giveaway.mp3"),
+    charity: new Audio("/sounds/charity.mp3"),
+    bigballer: new Audio("/sounds/bigballer.mp3"),
+    ultraballer: new Audio("/sounds/ultraballer.mp3")
+  };
+
+  Object.values(sounds).forEach(sound => {
+    sound.preload = "auto";
+    sound.volume = 1;
+  });
+
+  async function unlockAudio() {
+    try {
+      const silent = new Audio(
+        "data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAACAAACcQCA"
+      );
+
+      silent.volume = 0;
+      await silent.play();
+      silent.pause();
+
+      console.log("Audio unlocked");
+    } catch (err) {
+      console.log("Audio unlock failed:", err);
+    }
+  }
+
+  unlockAudio();
+
+  function playSound(option, amount) {
+    let sound = sounds[option] || sounds.anything;
+
+    if (amount >= 50) {
+      sound = sounds.ultraballer;
+    } else if (amount >= 20) {
+      sound = sounds.bigballer;
     }
 
-    #alert {
-      position: absolute;
-      left: 50%;
-      top: 12%;
-      transform: translateX(-50%) scale(0.8);
-      opacity: 0;
-      transition: all 0.5s ease;
-      text-align: center;
-      color: white;
-      background: rgba(0,0,0,0.78);
-      border: 3px solid #ff2d2d;
-      border-radius: 26px;
-      padding: 28px 48px;
-      box-shadow: 0 0 35px rgba(255, 0, 0, 0.7);
-      min-width: 620px;
+    sound.pause();
+    sound.currentTime = 0;
+
+    sound.play()
+      .then(() => console.log("Playing:", sound.src))
+      .catch(err => console.error("Sound error:", err));
+  }
+
+  function showAlert(data) {
+    const option = data.option || "anything";
+    const selected = optionMessages[option] || optionMessages.anything;
+    const amount = Number(data.amount || 0);
+
+    playSound(option, amount);
+
+    document.getElementById("emoji").textContent = selected.emoji;
+    document.getElementById("name").textContent =
+      data.name || "Anonymous Supporter";
+
+    document.getElementById("amount").textContent =
+      `${amount.toFixed(2)} ${data.currency || "GBP"}`;
+
+    document.getElementById("message").textContent =
+      selected.text;
+
+    const baller = document.getElementById("baller");
+
+    if (amount >= 50) {
+      baller.textContent = "👑 ULTRA BIG BALLER ALERT!";
+    } else if (amount >= 20) {
+      baller.textContent = "🏆 BIG BALLER STATUS UNLOCKED!";
+    } else {
+      baller.textContent = "";
     }
 
-    #alert.show {
-      opacity: 1;
-      transform: translateX(-50%) scale(1);
-    }
+    alertBox.classList.add("show");
 
-    .emoji { font-size: 72px; }
+    setTimeout(() => {
+      alertBox.classList.remove("show");
+    }, 10000);
+  }
 
-    .name {
-      font-size: 58px;
-      font-weight: 900;
-      text-transform: uppercase;
-    }
+  async function checkAlert() {
+    try {
+      const res = await fetch("/api/alert");
+      const data = await res.json();
 
-    .amount {
-      font-size: 42px;
-      font-weight: 800;
-      color: #ffdf5d;
-      margin-top: 8px;
-    }
-
-    .message {
-      font-size: 34px;
-      margin-top: 14px;
-    }
-
-    .baller {
-      margin-top: 22px;
-      font-size: 38px;
-      font-weight: 900;
-      color: #ff2d2d;
-      animation: pulse 0.7s infinite alternate;
-    }
-
-    @keyframes pulse {
-      from { transform: scale(1); }
-      to { transform: scale(1.08); }
-    }
-  </style>
-</head>
-<body>
-  <div id="alert">
-    <div class="emoji" id="emoji"></div>
-    <div class="name" id="name"></div>
-    <div class="amount" id="amount"></div>
-    <div class="message" id="message"></div>
-    <div class="baller" id="baller"></div>
-  </div>
-
-  <script>
-    const alertBox = document.getElementById("alert");
-    let lastSeenId = localStorage.getItem("lastAlertId");
-
-    const optionMessages = {
-      anything: { emoji: "💸", text: "Thanks for supporting the stream!" },
-      redstripe: { emoji: "🍺", text: "Mans now buying some Red Stripe, thank you!" },
-      equipment: { emoji: "🎥", text: "Thank you for helping upgrade the setup g!" },
-      giveaways: { emoji: "🎁", text: "This is going towards giveaways!" },
-      charity: { emoji: "❤️", text: "This is going to the charity pot!" }
-    };
-
-    const optionSounds = {
-      anything: "/sounds/anything.mp3",
-      redstripe: "/sounds/beer.mp3",
-      equipment: "/sounds/equipment.mp3",
-      giveaways: "/sounds/giveaway.mp3",
-      charity: "/sounds/charity.mp3"
-    };
-
-    function playSound(option, amount) {
-      let soundFile = optionSounds[option] || optionSounds.anything;
-
-      if (amount >= 50) {
-        soundFile = "/sounds/ultraballer.mp3";
-      } else if (amount >= 20) {
-        soundFile = "/sounds/bigballer.mp3";
+      if (data.id && data.id !== lastSeenId) {
+        lastSeenId = data.id;
+        localStorage.setItem("lastAlertId", data.id);
+        showAlert(data);
       }
+    } catch (err) {
+      console.error("Alert check failed", err);
+    }
+  }
 
-      const audio = new Audio(soundFile);
-      audio.volume = 1.0;
+  setInterval(checkAlert, 1000);
+</script><script>
+  const alertBox = document.getElementById("alert");
+  let lastSeenId = localStorage.getItem("lastAlertId");
 
-      audio.play()
-        .then(() => console.log("PLAYING:", soundFile))
-        .catch(err => console.log("Sound blocked:", err));
+  const optionMessages = {
+    anything: { emoji: "💸", text: "Thanks for supporting the stream!" },
+    redstripe: { emoji: "🍺", text: "Mans now buying some Red Stripe, thank you!" },
+    equipment: { emoji: "🎥", text: "Thank you for helping upgrade the setup g!" },
+    giveaways: { emoji: "🎁", text: "This is going towards giveaways!" },
+    charity: { emoji: "❤️", text: "This is going to the charity pot!" }
+  };
+
+  const sounds = {
+    anything: new Audio("/sounds/anything.mp3"),
+    redstripe: new Audio("/sounds/beer.mp3"),
+    equipment: new Audio("/sounds/equipment.mp3"),
+    giveaways: new Audio("/sounds/giveaway.mp3"),
+    charity: new Audio("/sounds/charity.mp3"),
+    bigballer: new Audio("/sounds/bigballer.mp3"),
+    ultraballer: new Audio("/sounds/ultraballer.mp3")
+  };
+
+  Object.values(sounds).forEach(sound => {
+    sound.preload = "auto";
+    sound.volume = 1;
+  });
+
+  async function unlockAudio() {
+    try {
+      const silent = new Audio(
+        "data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAACAAACcQCA"
+      );
+
+      silent.volume = 0;
+      await silent.play();
+      silent.pause();
+
+      console.log("Audio unlocked");
+    } catch (err) {
+      console.log("Audio unlock failed:", err);
+    }
+  }
+
+  unlockAudio();
+
+  function playSound(option, amount) {
+    let sound = sounds[option] || sounds.anything;
+
+    if (amount >= 50) {
+      sound = sounds.ultraballer;
+    } else if (amount >= 20) {
+      sound = sounds.bigballer;
     }
 
-    function showAlert(data) {
-      const option = data.option || "anything";
-      const selected = optionMessages[option] || optionMessages.anything;
-      const amount = Number(data.amount || 0);
+    sound.pause();
+    sound.currentTime = 0;
 
-      playSound(option, amount);
+    sound.play()
+      .then(() => console.log("Playing:", sound.src))
+      .catch(err => console.error("Sound error:", err));
+  }
 
-      document.getElementById("emoji").textContent = selected.emoji;
-      document.getElementById("name").textContent = data.name || "Anonymous Supporter";
-      document.getElementById("amount").textContent = `${amount.toFixed(2)} ${data.currency || "GBP"}`;
-      document.getElementById("message").textContent = selected.text;
+  function showAlert(data) {
+    const option = data.option || "anything";
+    const selected = optionMessages[option] || optionMessages.anything;
+    const amount = Number(data.amount || 0);
 
-      const baller = document.getElementById("baller");
+    playSound(option, amount);
 
-      if (amount >= 50) {
-        baller.textContent = "👑 ULTRA BIG BALLER ALERT!";
-      } else if (amount >= 20) {
-        baller.textContent = "🏆 BIG BALLER STATUS UNLOCKED!";
-      } else {
-        baller.textContent = "";
+    document.getElementById("emoji").textContent = selected.emoji;
+    document.getElementById("name").textContent =
+      data.name || "Anonymous Supporter";
+
+    document.getElementById("amount").textContent =
+      `${amount.toFixed(2)} ${data.currency || "GBP"}`;
+
+    document.getElementById("message").textContent =
+      selected.text;
+
+    const baller = document.getElementById("baller");
+
+    if (amount >= 50) {
+      baller.textContent = "👑 ULTRA BIG BALLER ALERT!";
+    } else if (amount >= 20) {
+      baller.textContent = "🏆 BIG BALLER STATUS UNLOCKED!";
+    } else {
+      baller.textContent = "";
+    }
+
+    alertBox.classList.add("show");
+
+    setTimeout(() => {
+      alertBox.classList.remove("show");
+    }, 10000);
+  }
+
+  async function checkAlert() {
+    try {
+      const res = await fetch("/api/alert");
+      const data = await res.json();
+
+      if (data.id && data.id !== lastSeenId) {
+        lastSeenId = data.id;
+        localStorage.setItem("lastAlertId", data.id);
+        showAlert(data);
       }
-
-      alertBox.classList.add("show");
-
-      setTimeout(() => {
-        alertBox.classList.remove("show");
-      }, 10000);
+    } catch (err) {
+      console.error("Alert check failed", err);
     }
+  }
 
-    async function checkAlert() {
-      try {
-        const res = await fetch("/api/alert");
-        const data = await res.json();
-
-        if (data.id && data.id !== lastSeenId) {
-          lastSeenId = data.id;
-          localStorage.setItem("lastAlertId", data.id);
-          showAlert(data);
-        }
-      } catch (err) {
-        console.error("Alert check failed", err);
-      }
-    }
-
-    setInterval(checkAlert, 1000);
-  </script>
-</body>
-</html>
+  setInterval(checkAlert, 1000);
+</script>
