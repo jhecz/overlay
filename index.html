@@ -78,17 +78,41 @@
     let lastSeenId = localStorage.getItem("lastAlertId");
 
     const optionMessages = {
-      anything: { emoji: "💸", text: "Supporting the stream!" },
-      redstripe: { emoji: "🍺", text: "Mans now buying some Red Stripe!" },
-      equipment: { emoji: "🎥", text: "Helping upgrade the setup g!" },
-      giveaways: { emoji: "🎁", text: "Supporting future giveaways!" },
-      charity: { emoji: "❤️", text: "Supporting the charity pot!" }
+      anything: { emoji: "💸", text: "Thanks for supporting the stream!" },
+      redstripe: { emoji: "🍺", text: "Mans now buying some Red Stripe, thank you!" },
+      equipment: { emoji: "🎥", text: "Thank you for helping upgrade the setup g!" },
+      giveaways: { emoji: "🎁", text: "This is going towards giveaways!" },
+      charity: { emoji: "❤️", text: "This is going to the charity pot!" }
     };
+
+    const optionSounds = {
+      anything: "/sounds/anything.mp3",
+      redstripe: "/sounds/beer.mp3",
+      equipment: "/sounds/equipment.mp3",
+      giveaways: "/sounds/giveaway.mp3",
+      charity: "/sounds/charity.mp3"
+    };
+
+    function playSound(option, amount) {
+      let soundFile = optionSounds[option] || optionSounds.anything;
+
+      if (amount >= 50) {
+        soundFile = "/sounds/ultraballer.mp3";
+      } else if (amount >= 20) {
+        soundFile = "/sounds/bigballer.mp3";
+      }
+
+      const audio = new Audio(soundFile);
+      audio.volume = 1.0;
+      audio.play().catch(err => console.log("Sound blocked:", err));
+    }
 
     function showAlert(data) {
       const option = data.option || "anything";
       const selected = optionMessages[option] || optionMessages.anything;
       const amount = Number(data.amount || 0);
+
+      playSound(option, amount);
 
       document.getElementById("emoji").textContent = selected.emoji;
       document.getElementById("name").textContent = data.name || "Anonymous Supporter";
