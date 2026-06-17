@@ -1,6 +1,133 @@
 <!DOCTYPE html>
 <html>
-  <body style="background: transparent; color: white; font-family: Arial; font-size: 60px;">
-    JHecz Overlay Online ✅
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    #alert {
+      position: absolute;
+      left: 50%;
+      top: 12%;
+      transform: translateX(-50%) scale(0.8);
+      opacity: 0;
+      transition: all 0.5s ease;
+      text-align: center;
+      color: white;
+      background: rgba(0,0,0,0.78);
+      border: 3px solid #ff2d2d;
+      border-radius: 26px;
+      padding: 28px 48px;
+      box-shadow: 0 0 35px rgba(255, 0, 0, 0.7);
+      min-width: 620px;
+    }
+
+    #alert.show {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+    }
+
+    .emoji {
+      font-size: 72px;
+      margin-bottom: 8px;
+    }
+
+    .name {
+      font-size: 58px;
+      font-weight: 900;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+
+    .amount {
+      font-size: 42px;
+      font-weight: 800;
+      color: #ffdf5d;
+      margin-top: 8px;
+    }
+
+    .message {
+      font-size: 34px;
+      margin-top: 14px;
+    }
+
+    .baller {
+      margin-top: 22px;
+      font-size: 38px;
+      font-weight: 900;
+      color: #ff2d2d;
+      animation: pulse 0.7s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.08); }
+    }
+  </style>
+</head>
+<body>
+  <div id="alert">
+    <div class="emoji" id="emoji">🍺</div>
+    <div class="name" id="name">BIG DAVE</div>
+    <div class="amount" id="amount">£20.00</div>
+    <div class="message" id="message">Mans now buying some Red Stripe!</div>
+    <div class="baller" id="baller"></div>
+  </div>
+
+  <script>
+    const alertBox = document.getElementById("alert");
+
+    const optionMessages = {
+      anything: { emoji: "💸", text: "Supporting the stream!" },
+      redstripe: { emoji: "🍺", text: "Mans now buying some Red Stripe!" },
+      equipment: { emoji: "🎥", text: "Helping upgrade the setup g!" },
+      giveaways: { emoji: "🎁", text: "Supporting future giveaways!" },
+      charity: { emoji: "❤️", text: "Supporting the charity pot!" }
+    };
+
+    function showAlert(data) {
+      const option = data.option || "anything";
+      const selected = optionMessages[option] || optionMessages.anything;
+      const amount = Number(data.amount || 0);
+
+      document.getElementById("emoji").textContent = selected.emoji;
+      document.getElementById("name").textContent = data.name || "Anonymous Supporter";
+      document.getElementById("amount").textContent = `${data.currency || "GBP"} ${amount.toFixed(2)}`;
+      document.getElementById("message").textContent = selected.text;
+
+      const baller = document.getElementById("baller");
+
+      if (amount >= 50) {
+        baller.textContent = "👑 ULTRA BIG BALLER ALERT!";
+      } else if (amount >= 20) {
+        baller.textContent = "🏆 BIG BALLER STATUS UNLOCKED!";
+      } else {
+        baller.textContent = "";
+      }
+
+      alertBox.classList.add("show");
+
+      setTimeout(() => {
+        alertBox.classList.remove("show");
+      }, 10000);
+    }
+
+    // Test alert on page load
+    setTimeout(() => {
+      showAlert({
+        name: "Testerrr",
+        amount: 20,
+        currency: "GBP",
+        option: "redstripe"
+      });
+    }, 1000);
+  </script>
+</body>
 </html>
