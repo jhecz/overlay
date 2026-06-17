@@ -34,30 +34,22 @@
       transform: translateX(-50%) scale(1);
     }
 
-    .emoji {
-      font-size: 72px;
-      margin-bottom: 8px;
-    }
-
+    .emoji { font-size: 72px; }
     .name {
       font-size: 58px;
       font-weight: 900;
-      color: #ffffff;
       text-transform: uppercase;
     }
-
     .amount {
       font-size: 42px;
       font-weight: 800;
       color: #ffdf5d;
       margin-top: 8px;
     }
-
     .message {
       font-size: 34px;
       margin-top: 14px;
     }
-
     .baller {
       margin-top: 22px;
       font-size: 38px;
@@ -74,15 +66,16 @@
 </head>
 <body>
   <div id="alert">
-    <div class="emoji" id="emoji">🍺</div>
-    <div class="name" id="name">BIG DAVE</div>
-    <div class="amount" id="amount">£20.00</div>
-    <div class="message" id="message">Mans now buying some Red Stripe!</div>
+    <div class="emoji" id="emoji"></div>
+    <div class="name" id="name"></div>
+    <div class="amount" id="amount"></div>
+    <div class="message" id="message"></div>
     <div class="baller" id="baller"></div>
   </div>
 
   <script>
     const alertBox = document.getElementById("alert");
+    let lastSeenId = localStorage.getItem("lastAlertId");
 
     const optionMessages = {
       anything: { emoji: "💸", text: "Supporting the stream!" },
@@ -99,11 +92,10 @@
 
       document.getElementById("emoji").textContent = selected.emoji;
       document.getElementById("name").textContent = data.name || "Anonymous Supporter";
-      document.getElementById("amount").textContent = `${data.currency || "GBP"} ${amount.toFixed(2)}`;
+      document.getElementById("amount").textContent = `${amount.toFixed(2)} ${data.currency || "GBP"}`;
       document.getElementById("message").textContent = selected.text;
 
       const baller = document.getElementById("baller");
-
       if (amount >= 50) {
         baller.textContent = "👑 ULTRA BIG BALLER ALERT!";
       } else if (amount >= 20) {
@@ -113,21 +105,25 @@
       }
 
       alertBox.classList.add("show");
-
-      setTimeout(() => {
-        alertBox.classList.remove("show");
-      }, 10000);
+      setTimeout(() => alertBox.classList.remove("show"), 10000);
     }
 
-    // Test alert on page load
-    setTimeout(() => {
-      showAlert({
-        name: "Testerrr",
-        amount: 20,
-        currency: "GBP",
-        option: "redstripe"
-      });
-    }, 1000);
+    async function checkAlert() {
+      try {
+        const res = await fetch("/api/alert");
+        const data = await res.json();
+
+        if (data.id && data.id !== lastSeenId) {
+          lastSeenId = data.id;
+          localStorage.setItem("lastAlertId", data.id);
+          showAlert(data);
+        }
+      } catch (err) {
+        console.error("Alert check failed", err);
+      }
+    }
+
+    setInterval(checkAlert, 1000);
   </script>
 </body>
 </html>
