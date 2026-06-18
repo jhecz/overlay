@@ -1,14 +1,14 @@
 export default function handler(req, res) {
   const auth = req.headers.authorization || "";
-  const username = "jhecz";
   const password = process.env.DASH_PASS;
-  console.log("DASH_PASS exists:", !!password);
-  
 
-  const expected =
-    "Basic " + Buffer.from(`${username}:${password}`).toString("base64");
+const decoded = auth.startsWith("Basic ")
+  ? Buffer.from(auth.replace("Basic ", ""), "base64").toString()
+  : "";
 
-  if (!password || auth !== expected) {
+const enteredPassword = decoded.split(":").slice(1).join(":");
+
+  if (!password || enteredPassword !== password) {
     res.setHeader("WWW-Authenticate", 'Basic realm="JHecz Dashboard"');
     return res.status(401).send(`Login failed. Password exists: ${password ? "YES" : "NO"}`);
   }
