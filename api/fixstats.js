@@ -37,23 +37,23 @@ export default async function handler(req, res) {
   createdAt: "2025-06-18T09:07:40Z"
 };
 
-  const stats = {
-    totalDonations: 1,
-    totalRaised: 5,
-    redStripeCount: 1,
-    bigBallerCount: 0,
-    ultraBallerCount: 0,
-    byType: {
-      redstripe: 1
-    },
-    byTypeAmount: {
-      redstripe: 5
-    },
-    supporters: {
-      m0dk: 5
-    },
-    recent: [donation]
-  };
+ const stats = {
+  totalDonations: 1,
+  totalRaised: 5,
+  redStripeCount: 1,
+  bigBallerCount: 0,
+  ultraBallerCount: 0,
+  byType: {
+    redstripe: 1
+  },
+  byTypeAmount: {
+    redstripe: 5
+  },
+  supporters: {
+    m0dk: 5
+  },
+  recent: [donation]
+};
 
   await redis.set("donation_stats", JSON.stringify(stats));
 
