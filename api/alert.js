@@ -31,7 +31,18 @@ export default async function handler(req, res) {
       option: req.body.option || "anything"
     };
 
+    const isTest = req.body.test === true;
+
     await redis.set("latest_alert", JSON.stringify(alert));
+
+    if (isTest) {
+      return res.status(200).json({
+        ok: true,
+        test: true,
+        alert,
+        message: "Test alert shown, dashboard stats not updated."
+      });
+    }
 
     const existingStatsRaw = await redis.get("donation_stats");
     const stats = existingStatsRaw
@@ -48,23 +59,28 @@ export default async function handler(req, res) {
           recent: []
         };
 
-    stats.totalDonations += 1;
-    stats.totalRaised += alert.amount;
+    stats.byType = stats.byType || {};
+    stats.byTypeAmount = stats.byTypeAmount || {};
+    stats.supporters = stats.supporters || {};
+    stats.recent = stats.recent || [];
+
+    stats.totalDonations = (stats.totalDonations || 0) + 1;
+    stats.totalRaised = (stats.totalRaised || 0) + alert.amount;
 
     stats.byType[alert.option] = (stats.byType[alert.option] || 0) + 1;
     stats.byTypeAmount[alert.option] =
-    (stats.byTypeAmount[alert.option] || 0) + alert.amount;
+      (stats.byTypeAmount[alert.option] || 0) + alert.amount;
 
     if (alert.option === "redstripe") {
-      stats.redStripeCount += 1;
+      stats.redStripeCount = (stats.redStripeCount || 0) + 1;
     }
 
     if (alert.amount >= 20) {
-      stats.bigBallerCount += 1;
+      stats.bigBallerCount = (stats.bigBallerCount || 0) + 1;
     }
 
     if (alert.amount >= 50) {
-      stats.ultraBallerCount += 1;
+      stats.ultraBallerCount = (stats.ultraBallerCount || 0) + 1;
     }
 
     stats.supporters[alert.name] =
