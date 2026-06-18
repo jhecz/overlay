@@ -10,32 +10,57 @@ async function getRedis() {
   }
   return client;
 }
-
+//helper functions brooo
 function money(amount, currency = "GBP") {
+  if (currency === "GBP") {
+    return `£${Number(amount || 0).toFixed(2)}`;
+  }
+
   return `${currency} ${Number(amount || 0).toFixed(2)}`;
 }
 
+function getLondonDate(date) {
+  return new Date(
+    new Date(date).toLocaleString("en-US", {
+      timeZone: "Europe/London"
+    })
+  );
+}
+
 function isSameDay(date) {
-  const d = new Date(date);
-  const now = new Date();
-  return d.toDateString() === now.toDateString();
+  const d = getLondonDate(date);
+  const now = getLondonDate(new Date());
+
+  return (
+    d.getDate() === now.getDate() &&
+    d.getMonth() === now.getMonth() &&
+    d.getFullYear() === now.getFullYear()
+  );
 }
 
 function isThisWeek(date) {
-  const d = new Date(date);
-  const now = new Date();
-  const start = new Date(now);
-  start.setDate(now.getDate() - now.getDay());
-  start.setHours(0, 0, 0, 0);
-  return d >= start;
+  const d = getLondonDate(date);
+  const now = getLondonDate(new Date());
+
+  const monday = new Date(now);
+  const day = monday.getDay() || 7;
+
+  monday.setDate(monday.getDate() - day + 1);
+  monday.setHours(0, 0, 0, 0);
+
+  return d >= monday;
 }
 
 function isThisMonth(date) {
-  const d = new Date(date);
-  const now = new Date();
-  return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-}
+  const d = getLondonDate(date);
+  const now = getLondonDate(new Date());
 
+  return (
+    d.getMonth() === now.getMonth() &&
+    d.getFullYear() === now.getFullYear()
+  );
+}
+//end helper functions
 export default async function handler(req, res) {
   const auth = req.headers.authorization || "";
   const password = process.env.DASH_PASS;
