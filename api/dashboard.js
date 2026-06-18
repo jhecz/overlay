@@ -83,7 +83,10 @@ export default async function handler(req, res) {
     .slice(0, 10)
     .map((d) => `
       <div class="row">
-        <span>${d.name} <small>${typeLabels[d.option] || d.option}</small></span>
+        <div>
+          <div>${d.name} <small>${typeLabels[d.option] || d.option}</small></div>
+          <small>${new Date(d.createdAt).toLocaleString()}</small>
+        </div>
         <strong>${money(d.amount, d.currency)}</strong>
       </div>
     `)
