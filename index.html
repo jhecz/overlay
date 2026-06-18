@@ -16,34 +16,32 @@
       position: absolute;
       left: 50%;
       top: 50%;
-      transform: translate(-50%, -50%) scale(0.4) rotate(-6deg);
+      transform: translate(-50%, -50%) scale(0.25) rotate(-10deg);
       opacity: 0;
       text-align: center;
       color: white;
-      border-radius: 34px;
-      padding: 38px 64px;
-      min-width: 720px;
-      background: rgba(8, 8, 8, 0.88);
-      border: 5px solid #ff0000;
-      box-shadow:
-        0 0 45px rgba(255, 0, 0, 0.95),
-        inset 0 0 30px rgba(255, 0, 0, 0.35);
-      transition: all 0.45s cubic-bezier(.2,1.6,.4,1);
+      border-radius: 38px;
+      padding: 42px 72px;
+      min-width: 760px;
+      background: rgba(5, 5, 5, 0.9);
+      border: 6px solid #ff0000;
+      box-shadow: 0 0 90px #ff0000, inset 0 0 45px rgba(255,0,0,.5);
+      transition: all .45s cubic-bezier(.2,1.6,.4,1);
       overflow: hidden;
     }
 
     #alert.show {
       opacity: 1;
       transform: translate(-50%, -50%) scale(1) rotate(0deg);
-      animation: bounceGlow 0.9s ease, subtleShake 0.3s ease 0.9s;
+      animation: slam .9s ease;
     }
 
     #alert::before {
       content: "";
       position: absolute;
-      inset: -50%;
-      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.25), transparent);
-      transform: rotate(20deg) translateX(-100%);
+      inset: -60%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,.35), transparent);
+      transform: rotate(20deg) translateX(-120%);
     }
 
     #alert.show::before {
@@ -51,111 +49,143 @@
     }
 
     .emoji {
-      font-size: 88px;
-      animation: pop 0.9s ease infinite alternate;
+      font-size: 96px;
+      animation: emojiPop .55s infinite alternate;
     }
 
     .name {
-      font-size: 68px;
+      font-size: 72px;
       font-weight: 1000;
       text-transform: uppercase;
-      letter-spacing: 2px;
-      text-shadow: 0 0 18px currentColor;
+      letter-spacing: 3px;
+      text-shadow: 0 0 24px currentColor;
     }
 
     .amount {
-      font-size: 52px;
-      font-weight: 900;
+      font-size: 56px;
+      font-weight: 1000;
       color: #ffea00;
       margin-top: 10px;
-      text-shadow: 0 0 22px rgba(255, 234, 0, 0.9);
+      text-shadow: 0 0 28px rgba(255,234,0,1);
     }
 
     .message {
-      font-size: 38px;
-      margin-top: 18px;
-      font-weight: 800;
+      font-size: 40px;
+      margin-top: 20px;
+      font-weight: 900;
     }
 
     .baller {
-      margin-top: 28px;
-      font-size: 46px;
+      margin-top: 30px;
+      font-size: 50px;
       font-weight: 1000;
       color: #ff0000;
-      text-shadow: 0 0 26px #ff0000;
-      animation: pulse 0.45s infinite alternate;
+      text-shadow: 0 0 30px #ff0000;
+      animation: pulse .38s infinite alternate;
     }
 
-    .anything { border-color: #00ff6a; box-shadow: 0 0 55px rgba(0,255,106,0.9), inset 0 0 30px rgba(0,255,106,0.25); }
-    .redstripe { border-color: #ff0000; box-shadow: 0 0 70px rgba(255,0,0,1), inset 0 0 35px rgba(255,0,0,0.45); }
-    .equipment { border-color: #00c8ff; box-shadow: 0 0 60px rgba(0,200,255,0.95), inset 0 0 35px rgba(0,200,255,0.25); }
-    .giveaways { border-color: #b000ff; box-shadow: 0 0 60px rgba(176,0,255,0.95), inset 0 0 35px rgba(176,0,255,0.25); }
-    .charity { border-color: #ff2b7a; box-shadow: 0 0 65px rgba(255,43,122,0.95), inset 0 0 35px rgba(255,43,122,0.3); }
+    .anything {
+      border-color: #00ff6a;
+      box-shadow: 0 0 80px rgba(0,255,106,1), inset 0 0 45px rgba(0,255,106,.35);
+    }
+
+    .redstripe {
+      border-color: #ff0000;
+      box-shadow: 0 0 105px rgba(255,0,0,1), inset 0 0 55px rgba(255,0,0,.55);
+    }
+
+    .equipment {
+      border-color: #00c8ff;
+      box-shadow: 0 0 85px rgba(0,200,255,1), inset 0 0 45px rgba(0,200,255,.35);
+    }
+
+    .giveaways {
+      border-color: #b000ff;
+      box-shadow: 0 0 85px rgba(176,0,255,1), inset 0 0 45px rgba(176,0,255,.35);
+    }
+
+    .charity {
+      border-color: #ff2b7a;
+      box-shadow: 0 0 90px rgba(255,43,122,1), inset 0 0 45px rgba(255,43,122,.4);
+    }
 
     .bigballer {
       border-color: #ffd700 !important;
-      box-shadow: 0 0 90px rgba(255,215,0,1), inset 0 0 45px rgba(255,215,0,0.45) !important;
-      animation: bigShake 0.22s infinite alternate;
+      box-shadow: 0 0 130px rgba(255,215,0,1), inset 0 0 65px rgba(255,215,0,.55) !important;
+      animation: bigShake .2s infinite alternate !important;
     }
 
     .ultraballer {
       border-color: #ff0000 !important;
-      box-shadow: 0 0 120px rgba(255,0,0,1), inset 0 0 60px rgba(255,0,0,0.65) !important;
-      animation: ultraShake 0.16s infinite alternate;
+      box-shadow: 0 0 160px rgba(255,0,0,1), inset 0 0 80px rgba(255,0,0,.75) !important;
+      animation: ultraShake .13s infinite alternate !important;
+    }
+
+    #flash {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,0,0,.45);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #flash.show {
+      animation: flash .65s ease;
     }
 
     .particle {
       position: absolute;
-      font-size: 42px;
+      font-size: 44px;
       pointer-events: none;
-      animation: fall 3s linear forwards;
+      animation: fall linear forwards;
       z-index: 999;
     }
 
-    @keyframes bounceGlow {
-      0% { transform: translate(-50%, -50%) scale(0.25) rotate(-12deg); opacity: 0; }
-      60% { transform: translate(-50%, -50%) scale(1.14) rotate(4deg); opacity: 1; }
+    @keyframes slam {
+      0% { transform: translate(-50%, -50%) scale(.18) rotate(-16deg); opacity: 0; }
+      55% { transform: translate(-50%, -50%) scale(1.18) rotate(5deg); opacity: 1; }
       100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
     }
 
     @keyframes shine {
-      to { transform: rotate(20deg) translateX(220%); }
+      to { transform: rotate(20deg) translateX(240%); }
     }
 
-    @keyframes pop {
-      from { transform: scale(1); }
-      to { transform: scale(1.12); }
+    @keyframes emojiPop {
+      from { transform: scale(1) rotate(-4deg); }
+      to { transform: scale(1.16) rotate(4deg); }
     }
 
     @keyframes pulse {
       from { transform: scale(1); }
-      to { transform: scale(1.12); }
-    }
-
-    @keyframes subtleShake {
-      0%,100% { margin-left: 0; }
-      25% { margin-left: -8px; }
-      50% { margin-left: 8px; }
-      75% { margin-left: -5px; }
+      to { transform: scale(1.14); }
     }
 
     @keyframes bigShake {
-      from { transform: translate(-50%, -50%) scale(1) rotate(-1deg); }
-      to { transform: translate(-50%, -50%) scale(1.03) rotate(1deg); }
+      from { transform: translate(-50%, -50%) scale(1.02) rotate(-1deg); }
+      to { transform: translate(-50%, -50%) scale(1.06) rotate(1deg); }
     }
 
     @keyframes ultraShake {
-      from { transform: translate(-50%, -50%) scale(1.03) rotate(-2deg); }
-      to { transform: translate(-50%, -50%) scale(1.08) rotate(2deg); }
+      from { transform: translate(-50%, -50%) scale(1.05) rotate(-2deg); }
+      to { transform: translate(-50%, -50%) scale(1.12) rotate(2deg); }
+    }
+
+    @keyframes flash {
+      0% { opacity: 0; }
+      25% { opacity: 1; }
+      100% { opacity: 0; }
     }
 
     @keyframes fall {
       0% { transform: translateY(-80px) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+      100% { transform: translateY(115vh) rotate(760deg); opacity: 0; }
     }
   </style>
 </head>
 <body>
+  <div id="flash"></div>
+
   <div id="alert">
     <div class="emoji" id="emoji"></div>
     <div class="name" id="name"></div>
@@ -166,7 +196,11 @@
 
   <script>
     const alertBox = document.getElementById("alert");
+    const flash = document.getElementById("flash");
+
     let lastSeenId = localStorage.getItem("lastAlertId");
+    let alertQueue = [];
+    let alertShowing = false;
 
     const optionMessages = {
       anything: { emoji: "💸", text: "Thanks for supporting the stream!", particle: "💸" },
@@ -193,6 +227,7 @@
 
     function playSound(option, amount) {
       let sound = sounds[option] || sounds.anything;
+
       if (amount >= 50) sound = sounds.ultraballer;
       else if (amount >= 20) sound = sounds.bigballer;
 
@@ -201,17 +236,33 @@
       sound.play().catch(err => console.error("Sound error:", err));
     }
 
-    function particles(symbol, count) {
+    function makeParticles(symbol, count) {
       for (let i = 0; i < count; i++) {
         const p = document.createElement("div");
         p.className = "particle";
         p.textContent = symbol;
         p.style.left = Math.random() * 100 + "vw";
-        p.style.top = "-50px";
-        p.style.animationDuration = (2 + Math.random() * 2.5) + "s";
+        p.style.top = "-60px";
+        p.style.animationDuration = (2 + Math.random() * 2.8) + "s";
+        p.style.fontSize = (32 + Math.random() * 34) + "px";
         document.body.appendChild(p);
-        setTimeout(() => p.remove(), 4500);
+        setTimeout(() => p.remove(), 5200);
       }
+    }
+
+    function queueAlert(data) {
+      alertQueue.push(data);
+      if (!alertShowing) playNextAlert();
+    }
+
+    function playNextAlert() {
+      if (alertQueue.length === 0) {
+        alertShowing = false;
+        return;
+      }
+
+      alertShowing = true;
+      showAlert(alertQueue.shift());
     }
 
     function showAlert(data) {
@@ -224,8 +275,13 @@
       alertBox.className = "";
       alertBox.classList.add(option);
 
-      if (amount >= 50) alertBox.classList.add("ultraballer");
-      else if (amount >= 20) alertBox.classList.add("bigballer");
+      if (amount >= 50) {
+        alertBox.classList.add("ultraballer");
+        flash.classList.add("show");
+        setTimeout(() => flash.classList.remove("show"), 700);
+      } else if (amount >= 20) {
+        alertBox.classList.add("bigballer");
+      }
 
       document.getElementById("emoji").textContent = selected.emoji;
       document.getElementById("name").textContent = data.name || "Anonymous Supporter";
@@ -236,21 +292,29 @@
 
       if (amount >= 50) {
         baller.textContent = "👑 ULTRA BIG BALLER ALERT!";
-        particles("👑", 30);
-        particles("💸", 45);
+        makeParticles("👑", 36);
+        makeParticles("💸", 55);
+        makeParticles(selected.particle, 28);
       } else if (amount >= 20) {
         baller.textContent = "🏆 BIG BALLER STATUS UNLOCKED!";
-        particles("💸", 35);
+        makeParticles("💸", 45);
+        makeParticles(selected.particle, 25);
       } else {
         baller.textContent = "";
-        particles(selected.particle, 18);
+        makeParticles(selected.particle, 24);
       }
 
       alertBox.classList.add("show");
 
+      const displayTime = amount >= 50 ? 13000 : amount >= 20 ? 12000 : 10000;
+
       setTimeout(() => {
         alertBox.classList.remove("show", "bigballer", "ultraballer");
-      }, amount >= 50 ? 13000 : amount >= 20 ? 12000 : 10000);
+
+        setTimeout(() => {
+          playNextAlert();
+        }, 900);
+      }, displayTime);
     }
 
     async function checkAlert() {
@@ -261,7 +325,7 @@
         if (data.id && data.id !== lastSeenId) {
           lastSeenId = data.id;
           localStorage.setItem("lastAlertId", data.id);
-          showAlert(data);
+          queueAlert(data);
         }
       } catch (err) {
         console.error("Alert check failed", err);
