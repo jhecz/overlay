@@ -184,6 +184,16 @@
   </style>
 </head>
 <body>
+  <button id="enableSound" style="
+  position:absolute;
+  top:20px;
+  left:20px;
+  z-index:99999;
+  font-size:28px;
+  padding:12px 20px;
+">
+  Enable Sound
+</button>
   <div id="flash"></div>
 
   <div id="alert">
@@ -201,6 +211,17 @@
     let lastSeenId = localStorage.getItem("lastAlertId");
     let alertQueue = [];
     let alertShowing = false;
+
+    const enableSoundButton = document.getElementById("enableSound");
+
+enableSoundButton.addEventListener("click", async () => {
+  const test = sounds.anything;
+  test.volume = 0.2;
+  test.currentTime = 0;
+  await test.play();
+
+  enableSoundButton.style.display = "none";
+});
 
     const optionMessages = {
       anything: { emoji: "💸", text: "Thanks for supporting the stream!", particle: "💸" },
