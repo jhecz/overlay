@@ -1,10 +1,8 @@
-import { NextResponse } from "next/server";
-
 export function middleware(req) {
   const host = req.headers.get("host") || "";
 
   if (!host.startsWith("dashboard.jhecz.com")) {
-    return NextResponse.next();
+    return;
   }
 
   const auth = req.headers.get("authorization");
@@ -12,24 +10,23 @@ export function middleware(req) {
   const password = process.env.DASHBOARD_PASSWORD;
 
   if (!password) {
-    return new NextResponse("Dashboard password not set", { status: 500 });
+    return new Response("Dashboard password not set", { status: 500 });
   }
 
-  const expected =
-    "Basic " + btoa(`${username}:${password}`);
+  const expected = "Basic " + btoa(`${username}:${password}`);
 
   if (auth === expected) {
-    return NextResponse.next();
+    return;
   }
 
-  return new NextResponse("Login required", {
+  return new Response("Login required", {
     status: 401,
     headers: {
-      "WWW-Authenticate": 'Basic realm="JHecz Dashboard"',
-    },
+      "WWW-Authenticate": 'Basic realm="JHecz Dashboard"'
+    }
   });
 }
 
 export const config = {
-  matcher: "/:path*",
+  matcher: "/:path*"
 };
