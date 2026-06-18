@@ -8,7 +8,7 @@ export default function handler(req, res) {
 
   if (!password || auth !== expected) {
     res.setHeader("WWW-Authenticate", 'Basic realm="JHecz Dashboard"');
-    return res.status(401).send("Login required");
+    return res.status(401).send(`Login required. Password set: ${password ? "YES" : "NO"}`);
   }
 
   res.setHeader("Content-Type", "text/html");
