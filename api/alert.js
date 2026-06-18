@@ -28,7 +28,8 @@ export default async function handler(req, res) {
       name: req.body.name || "Anonymous Supporter",
       amount: Number(req.body.amount || 0),
       currency: req.body.currency || "GBP",
-      option: req.body.option || "anything"
+      option: req.body.option || "anything",
+      createdAt: new Date().toISOString()
     };
 
     const isTest = req.body.test === true;
