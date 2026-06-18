@@ -152,6 +152,55 @@ export default async function handler(req, res) {
           margin: 0;
         }
 
+        .layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 260px;
+  background: rgba(8,8,8,.98);
+  border-right: 1px solid rgba(255,0,0,.15);
+  padding: 30px 20px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.logo {
+  font-size: 28px;
+  font-weight: 900;
+  color: #ff2222;
+  margin-bottom: 40px;
+  text-shadow: 0 0 20px rgba(255,0,0,.8);
+}
+
+.nav {
+  display: block;
+  padding: 14px 18px;
+  margin-bottom: 8px;
+  border-radius: 14px;
+  color: #999;
+  text-decoration: none;
+  transition: all .2s ease;
+}
+
+.nav:hover {
+  background: rgba(255,0,0,.08);
+  color: white;
+}
+
+.nav.active {
+  background: rgba(255,0,0,.15);
+  color: white;
+  border: 1px solid rgba(255,0,0,.25);
+}
+
+.content {
+  flex: 1;
+}
+
         .wrap {
           max-width: 1500px;
           margin: 0 auto;
@@ -278,6 +327,20 @@ export default async function handler(req, res) {
     </head>
 
     <body>
+  <div class="layout">
+
+    <aside class="sidebar">
+      <div class="logo">🎥 JHECZ</div>
+
+      <a href="/api/dashboard" class="nav active">Dashboard</a>
+      <a href="/api/donations" class="nav">Donations</a>
+      <a href="/api/twitch" class="nav">Twitch</a>
+      <a href="/api/tiktok" class="nav">TikTok</a>
+      <a href="/api/leaderboard" class="nav">Leaderboards</a>
+      <a href="/api/settings" class="nav">Settings</a>
+    </aside>
+
+    <main class="content">
       <div class="wrap">
         <h1>🎥 JHECZ STREAM DASHBOARD</h1>
         <div class="subtitle">PayPal + Stripe donation analytics</div>
@@ -311,8 +374,10 @@ export default async function handler(req, res) {
             ${activityFeed}
           </div>
         </div>
-      </div>
-    </body>
-    </html>
+        </div>
+    </main>
+  </div>
+</body>
+</html>
   `);
 }
