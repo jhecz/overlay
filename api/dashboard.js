@@ -1,7 +1,7 @@
 export default function handler(req, res) {
   const auth = req.headers.authorization || "";
   const username = "jhecz";
-  const password = process.env.DASHBOARD_PASSWORD;
+  const password = process.env.DASH_PASS;
 
   const expected =
     "Basic " + Buffer.from(`${username}:${password}`).toString("base64");
