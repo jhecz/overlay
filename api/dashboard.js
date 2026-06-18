@@ -109,19 +109,36 @@ export default async function handler(req, res) {
     `;
   }).join("");
 
-  const topSupporters = Object.entries(stats.supporters || {})
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 10)
-    .map(([name, amount], index) => {
-      const medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `${index + 1}.`;
-      return `
-        <div class="row">
-          <span>${medal} ${name}</span>
-          <strong>${money(amount)}</strong>
-        </div>
-      `;
-    })
-    .join("") || `<div class="empty">No supporters yet</div>`;
+ const supporters = Object.entries(stats.supporters || {})
+  .sort((a, b) => b[1] - a[1]);
+
+const first = supporters[0];
+const second = supporters[1];
+const third = supporters[2];
+
+const topSupporters = `
+  <div class="podium">
+
+    <div class="podium-card silver">
+      <div class="place">🥈</div>
+      <div class="supporter">${second?.[0] || "---"}</div>
+      <div class="amount">${money(second?.[1] || 0)}</div>
+    </div>
+
+    <div class="podium-card gold">
+      <div class="place">🥇</div>
+      <div class="supporter">${first?.[0] || "---"}</div>
+      <div class="amount">${money(first?.[1] || 0)}</div>
+    </div>
+
+    <div class="podium-card bronze">
+      <div class="place">🥉</div>
+      <div class="supporter">${third?.[0] || "---"}</div>
+      <div class="amount">${money(third?.[1] || 0)}</div>
+    </div>
+
+  </div>
+`;
 
   const activityFeed = recent
     .slice(0, 20)
@@ -430,6 +447,7 @@ export default async function handler(req, res) {
     background: radial-gradient(circle at top right, rgba(0,255,138,0.18), transparent 42%);
   }
 
+
   .redstripe::before {
     background: radial-gradient(circle at top right, rgba(255,34,34,0.26), transparent 42%);
   }
@@ -563,6 +581,51 @@ export default async function handler(req, res) {
       padding: 0 16px 35px;
     }
   }
+
+  .podium {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 14px;
+  align-items: end;
+  margin-top: 20px;
+}
+
+.podium-card {
+  text-align: center;
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+.gold {
+  min-height: 220px;
+  border-color: rgba(255,215,0,.3);
+}
+
+.silver {
+  min-height: 180px;
+}
+
+.bronze {
+  min-height: 160px;
+}
+
+.place {
+  font-size: 42px;
+}
+
+.supporter {
+  margin-top: 12px;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.amount {
+  margin-top: 8px;
+  color: #aaa;
+  font-weight: 800;
+}
 </style>
     </head>
 
