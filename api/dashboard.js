@@ -621,16 +621,38 @@ export default async function handler(req, res) {
         </div>
 
         <div class="section">
-          <div class="card">
-            <div class="title">🏆 Hall of Fame</div>
-            ${topSupporters}
-          </div>
+  <div class="card">
+    <div class="title">🏆 Hall of Fame</div>
+    ${topSupporters}
+  </div>
 
-          <div class="card">
-            <div class="title">📡 Activity Feed</div>
-            ${activityFeed}
-          </div>
-        </div>
+  <div class="card">
+    <div class="title">📡 Activity Feed</div>
+    ${activityFeed}
+  </div>
+</div>
+
+<div class="coming-soon-grid">
+
+  <div class="card coming-soon">
+    <div class="title">🎮 Twitch Analytics</div>
+    <div class="value">Coming Soon</div>
+    <div class="badge">API Integration Planned</div>
+  </div>
+
+  <div class="card coming-soon">
+    <div class="title">🎵 TikTok Analytics</div>
+    <div class="value">Coming Soon</div>
+    <div class="badge">API Integration Planned</div>
+  </div>
+
+  <div class="card coming-soon">
+    <div class="title">🏆 Stream Leaderboards</div>
+    <div class="value">Coming Soon</div>
+    <div class="badge">Supporters • Subs • Gifts</div>
+  </div>
+
+</div>
         </div>
     </main>
   </div>
