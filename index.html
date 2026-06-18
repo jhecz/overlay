@@ -1,225 +1,274 @@
-<script>
-  const alertBox = document.getElementById("alert");
-  let lastSeenId = localStorage.getItem("lastAlertId");
-
-  const optionMessages = {
-    anything: { emoji: "💸", text: "Thanks for supporting the stream!" },
-    redstripe: { emoji: "🍺", text: "Mans now buying some Red Stripe, thank you!" },
-    equipment: { emoji: "🎥", text: "Thank you for helping upgrade the setup g!" },
-    giveaways: { emoji: "🎁", text: "This is going towards giveaways!" },
-    charity: { emoji: "❤️", text: "This is going to the charity pot!" }
-  };
-
-  const sounds = {
-    anything: new Audio("/sounds/anything.mp3"),
-    redstripe: new Audio("/sounds/beer.mp3"),
-    equipment: new Audio("/sounds/equipment.mp3"),
-    giveaways: new Audio("/sounds/giveaway.mp3"),
-    charity: new Audio("/sounds/charity.mp3"),
-    bigballer: new Audio("/sounds/bigballer.mp3"),
-    ultraballer: new Audio("/sounds/ultraballer.mp3")
-  };
-
-  Object.values(sounds).forEach(sound => {
-    sound.preload = "auto";
-    sound.volume = 1;
-  });
-
-  async function unlockAudio() {
-    try {
-      const silent = new Audio(
-        "data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAACAAACcQCA"
-      );
-
-      silent.volume = 0;
-      await silent.play();
-      silent.pause();
-
-      console.log("Audio unlocked");
-    } catch (err) {
-      console.log("Audio unlock failed:", err);
-    }
-  }
-
-  unlockAudio();
-
-  function playSound(option, amount) {
-    let sound = sounds[option] || sounds.anything;
-
-    if (amount >= 50) {
-      sound = sounds.ultraballer;
-    } else if (amount >= 20) {
-      sound = sounds.bigballer;
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
     }
 
-    sound.pause();
-    sound.currentTime = 0;
-
-    sound.play()
-      .then(() => console.log("Playing:", sound.src))
-      .catch(err => console.error("Sound error:", err));
-  }
-
-  function showAlert(data) {
-    const option = data.option || "anything";
-    const selected = optionMessages[option] || optionMessages.anything;
-    const amount = Number(data.amount || 0);
-
-    playSound(option, amount);
-
-    document.getElementById("emoji").textContent = selected.emoji;
-    document.getElementById("name").textContent =
-      data.name || "Anonymous Supporter";
-
-    document.getElementById("amount").textContent =
-      `${amount.toFixed(2)} ${data.currency || "GBP"}`;
-
-    document.getElementById("message").textContent =
-      selected.text;
-
-    const baller = document.getElementById("baller");
-
-    if (amount >= 50) {
-      baller.textContent = "👑 ULTRA BIG BALLER ALERT!";
-    } else if (amount >= 20) {
-      baller.textContent = "🏆 BIG BALLER STATUS UNLOCKED!";
-    } else {
-      baller.textContent = "";
+    #alert {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(0.4) rotate(-6deg);
+      opacity: 0;
+      text-align: center;
+      color: white;
+      border-radius: 34px;
+      padding: 38px 64px;
+      min-width: 720px;
+      background: rgba(8, 8, 8, 0.88);
+      border: 5px solid #ff0000;
+      box-shadow:
+        0 0 45px rgba(255, 0, 0, 0.95),
+        inset 0 0 30px rgba(255, 0, 0, 0.35);
+      transition: all 0.45s cubic-bezier(.2,1.6,.4,1);
+      overflow: hidden;
     }
 
-    alertBox.classList.add("show");
+    #alert.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1) rotate(0deg);
+      animation: bounceGlow 0.9s ease, subtleShake 0.3s ease 0.9s;
+    }
 
-    setTimeout(() => {
-      alertBox.classList.remove("show");
-    }, 10000);
-  }
+    #alert::before {
+      content: "";
+      position: absolute;
+      inset: -50%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.25), transparent);
+      transform: rotate(20deg) translateX(-100%);
+    }
 
-  async function checkAlert() {
-    try {
-      const res = await fetch("/api/alert");
-      const data = await res.json();
+    #alert.show::before {
+      animation: shine 1.3s ease forwards;
+    }
 
-      if (data.id && data.id !== lastSeenId) {
-        lastSeenId = data.id;
-        localStorage.setItem("lastAlertId", data.id);
-        showAlert(data);
+    .emoji {
+      font-size: 88px;
+      animation: pop 0.9s ease infinite alternate;
+    }
+
+    .name {
+      font-size: 68px;
+      font-weight: 1000;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      text-shadow: 0 0 18px currentColor;
+    }
+
+    .amount {
+      font-size: 52px;
+      font-weight: 900;
+      color: #ffea00;
+      margin-top: 10px;
+      text-shadow: 0 0 22px rgba(255, 234, 0, 0.9);
+    }
+
+    .message {
+      font-size: 38px;
+      margin-top: 18px;
+      font-weight: 800;
+    }
+
+    .baller {
+      margin-top: 28px;
+      font-size: 46px;
+      font-weight: 1000;
+      color: #ff0000;
+      text-shadow: 0 0 26px #ff0000;
+      animation: pulse 0.45s infinite alternate;
+    }
+
+    .anything { border-color: #00ff6a; box-shadow: 0 0 55px rgba(0,255,106,0.9), inset 0 0 30px rgba(0,255,106,0.25); }
+    .redstripe { border-color: #ff0000; box-shadow: 0 0 70px rgba(255,0,0,1), inset 0 0 35px rgba(255,0,0,0.45); }
+    .equipment { border-color: #00c8ff; box-shadow: 0 0 60px rgba(0,200,255,0.95), inset 0 0 35px rgba(0,200,255,0.25); }
+    .giveaways { border-color: #b000ff; box-shadow: 0 0 60px rgba(176,0,255,0.95), inset 0 0 35px rgba(176,0,255,0.25); }
+    .charity { border-color: #ff2b7a; box-shadow: 0 0 65px rgba(255,43,122,0.95), inset 0 0 35px rgba(255,43,122,0.3); }
+
+    .bigballer {
+      border-color: #ffd700 !important;
+      box-shadow: 0 0 90px rgba(255,215,0,1), inset 0 0 45px rgba(255,215,0,0.45) !important;
+      animation: bigShake 0.22s infinite alternate;
+    }
+
+    .ultraballer {
+      border-color: #ff0000 !important;
+      box-shadow: 0 0 120px rgba(255,0,0,1), inset 0 0 60px rgba(255,0,0,0.65) !important;
+      animation: ultraShake 0.16s infinite alternate;
+    }
+
+    .particle {
+      position: absolute;
+      font-size: 42px;
+      pointer-events: none;
+      animation: fall 3s linear forwards;
+      z-index: 999;
+    }
+
+    @keyframes bounceGlow {
+      0% { transform: translate(-50%, -50%) scale(0.25) rotate(-12deg); opacity: 0; }
+      60% { transform: translate(-50%, -50%) scale(1.14) rotate(4deg); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+    }
+
+    @keyframes shine {
+      to { transform: rotate(20deg) translateX(220%); }
+    }
+
+    @keyframes pop {
+      from { transform: scale(1); }
+      to { transform: scale(1.12); }
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.12); }
+    }
+
+    @keyframes subtleShake {
+      0%,100% { margin-left: 0; }
+      25% { margin-left: -8px; }
+      50% { margin-left: 8px; }
+      75% { margin-left: -5px; }
+    }
+
+    @keyframes bigShake {
+      from { transform: translate(-50%, -50%) scale(1) rotate(-1deg); }
+      to { transform: translate(-50%, -50%) scale(1.03) rotate(1deg); }
+    }
+
+    @keyframes ultraShake {
+      from { transform: translate(-50%, -50%) scale(1.03) rotate(-2deg); }
+      to { transform: translate(-50%, -50%) scale(1.08) rotate(2deg); }
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-80px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div id="alert">
+    <div class="emoji" id="emoji"></div>
+    <div class="name" id="name"></div>
+    <div class="amount" id="amount"></div>
+    <div class="message" id="message"></div>
+    <div class="baller" id="baller"></div>
+  </div>
+
+  <script>
+    const alertBox = document.getElementById("alert");
+    let lastSeenId = localStorage.getItem("lastAlertId");
+
+    const optionMessages = {
+      anything: { emoji: "💸", text: "Thanks for supporting the stream!", particle: "💸" },
+      redstripe: { emoji: "🍺", text: "Mans now buying some Red Stripe, thank you!", particle: "🍺" },
+      equipment: { emoji: "🎥", text: "Thank you for helping upgrade the setup g!", particle: "⚡" },
+      giveaways: { emoji: "🎁", text: "This is going towards giveaways!", particle: "🎁" },
+      charity: { emoji: "❤️", text: "This is going to the charity pot!", particle: "❤️" }
+    };
+
+    const sounds = {
+      anything: new Audio("/sounds/anything.mp3"),
+      redstripe: new Audio("/sounds/beer.mp3"),
+      equipment: new Audio("/sounds/equipment.mp3"),
+      giveaways: new Audio("/sounds/giveaway.mp3"),
+      charity: new Audio("/sounds/charity.mp3"),
+      bigballer: new Audio("/sounds/bigballer.mp3"),
+      ultraballer: new Audio("/sounds/ultraballer.mp3")
+    };
+
+    Object.values(sounds).forEach(sound => {
+      sound.preload = "auto";
+      sound.volume = 1;
+    });
+
+    function playSound(option, amount) {
+      let sound = sounds[option] || sounds.anything;
+      if (amount >= 50) sound = sounds.ultraballer;
+      else if (amount >= 20) sound = sounds.bigballer;
+
+      sound.pause();
+      sound.currentTime = 0;
+      sound.play().catch(err => console.error("Sound error:", err));
+    }
+
+    function particles(symbol, count) {
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement("div");
+        p.className = "particle";
+        p.textContent = symbol;
+        p.style.left = Math.random() * 100 + "vw";
+        p.style.top = "-50px";
+        p.style.animationDuration = (2 + Math.random() * 2.5) + "s";
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 4500);
       }
-    } catch (err) {
-      console.error("Alert check failed", err);
-    }
-  }
-
-  setInterval(checkAlert, 1000);
-</script><script>
-  const alertBox = document.getElementById("alert");
-  let lastSeenId = localStorage.getItem("lastAlertId");
-
-  const optionMessages = {
-    anything: { emoji: "💸", text: "Thanks for supporting the stream!" },
-    redstripe: { emoji: "🍺", text: "Mans now buying some Red Stripe, thank you!" },
-    equipment: { emoji: "🎥", text: "Thank you for helping upgrade the setup g!" },
-    giveaways: { emoji: "🎁", text: "This is going towards giveaways!" },
-    charity: { emoji: "❤️", text: "This is going to the charity pot!" }
-  };
-
-  const sounds = {
-    anything: new Audio("/sounds/anything.mp3"),
-    redstripe: new Audio("/sounds/beer.mp3"),
-    equipment: new Audio("/sounds/equipment.mp3"),
-    giveaways: new Audio("/sounds/giveaway.mp3"),
-    charity: new Audio("/sounds/charity.mp3"),
-    bigballer: new Audio("/sounds/bigballer.mp3"),
-    ultraballer: new Audio("/sounds/ultraballer.mp3")
-  };
-
-  Object.values(sounds).forEach(sound => {
-    sound.preload = "auto";
-    sound.volume = 1;
-  });
-
-  async function unlockAudio() {
-    try {
-      const silent = new Audio(
-        "data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAACAAACcQCA"
-      );
-
-      silent.volume = 0;
-      await silent.play();
-      silent.pause();
-
-      console.log("Audio unlocked");
-    } catch (err) {
-      console.log("Audio unlock failed:", err);
-    }
-  }
-
-  unlockAudio();
-
-  function playSound(option, amount) {
-    let sound = sounds[option] || sounds.anything;
-
-    if (amount >= 50) {
-      sound = sounds.ultraballer;
-    } else if (amount >= 20) {
-      sound = sounds.bigballer;
     }
 
-    sound.pause();
-    sound.currentTime = 0;
+    function showAlert(data) {
+      const option = data.option || "anything";
+      const selected = optionMessages[option] || optionMessages.anything;
+      const amount = Number(data.amount || 0);
 
-    sound.play()
-      .then(() => console.log("Playing:", sound.src))
-      .catch(err => console.error("Sound error:", err));
-  }
+      playSound(option, amount);
 
-  function showAlert(data) {
-    const option = data.option || "anything";
-    const selected = optionMessages[option] || optionMessages.anything;
-    const amount = Number(data.amount || 0);
+      alertBox.className = "";
+      alertBox.classList.add(option);
 
-    playSound(option, amount);
+      if (amount >= 50) alertBox.classList.add("ultraballer");
+      else if (amount >= 20) alertBox.classList.add("bigballer");
 
-    document.getElementById("emoji").textContent = selected.emoji;
-    document.getElementById("name").textContent =
-      data.name || "Anonymous Supporter";
+      document.getElementById("emoji").textContent = selected.emoji;
+      document.getElementById("name").textContent = data.name || "Anonymous Supporter";
+      document.getElementById("amount").textContent = `${amount.toFixed(2)} ${data.currency || "GBP"}`;
+      document.getElementById("message").textContent = selected.text;
 
-    document.getElementById("amount").textContent =
-      `${amount.toFixed(2)} ${data.currency || "GBP"}`;
+      const baller = document.getElementById("baller");
 
-    document.getElementById("message").textContent =
-      selected.text;
-
-    const baller = document.getElementById("baller");
-
-    if (amount >= 50) {
-      baller.textContent = "👑 ULTRA BIG BALLER ALERT!";
-    } else if (amount >= 20) {
-      baller.textContent = "🏆 BIG BALLER STATUS UNLOCKED!";
-    } else {
-      baller.textContent = "";
-    }
-
-    alertBox.classList.add("show");
-
-    setTimeout(() => {
-      alertBox.classList.remove("show");
-    }, 10000);
-  }
-
-  async function checkAlert() {
-    try {
-      const res = await fetch("/api/alert");
-      const data = await res.json();
-
-      if (data.id && data.id !== lastSeenId) {
-        lastSeenId = data.id;
-        localStorage.setItem("lastAlertId", data.id);
-        showAlert(data);
+      if (amount >= 50) {
+        baller.textContent = "👑 ULTRA BIG BALLER ALERT!";
+        particles("👑", 30);
+        particles("💸", 45);
+      } else if (amount >= 20) {
+        baller.textContent = "🏆 BIG BALLER STATUS UNLOCKED!";
+        particles("💸", 35);
+      } else {
+        baller.textContent = "";
+        particles(selected.particle, 18);
       }
-    } catch (err) {
-      console.error("Alert check failed", err);
-    }
-  }
 
-  setInterval(checkAlert, 1000);
-</script>
+      alertBox.classList.add("show");
+
+      setTimeout(() => {
+        alertBox.classList.remove("show", "bigballer", "ultraballer");
+      }, amount >= 50 ? 13000 : amount >= 20 ? 12000 : 10000);
+    }
+
+    async function checkAlert() {
+      try {
+        const res = await fetch("/api/alert");
+        const data = await res.json();
+
+        if (data.id && data.id !== lastSeenId) {
+          lastSeenId = data.id;
+          localStorage.setItem("lastAlertId", data.id);
+          showAlert(data);
+        }
+      } catch (err) {
+        console.error("Alert check failed", err);
+      }
+    }
+
+    setInterval(checkAlert, 1000);
+  </script>
+</body>
+</html>
