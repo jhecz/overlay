@@ -43,6 +43,7 @@ export default async function handler(req, res) {
           bigBallerCount: 0,
           ultraBallerCount: 0,
           byType: {},
+          byTypeAmount: {},
           supporters: {},
           recent: []
         };
@@ -51,6 +52,8 @@ export default async function handler(req, res) {
     stats.totalRaised += alert.amount;
 
     stats.byType[alert.option] = (stats.byType[alert.option] || 0) + 1;
+    stats.byTypeAmount[alert.option] =
+    (stats.byTypeAmount[alert.option] || 0) + alert.amount;
 
     if (alert.option === "redstripe") {
       stats.redStripeCount += 1;
