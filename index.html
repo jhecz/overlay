@@ -2,6 +2,12 @@
 <html>
 <head>
   <meta charset="UTF-8" />
+
+  <script>
+  if (location.hostname === "dashboard.jhecz.com" && location.pathname === "/") {
+    location.replace("/dashboard.html");
+  }
+</script>
   <style>
     html, body {
       margin: 0;
