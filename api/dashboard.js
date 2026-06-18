@@ -201,11 +201,35 @@ export default async function handler(req, res) {
   flex: 1;
 }
 
-        .wrap {
-          max-width: 1500px;
-          margin: 0 auto;
-          padding-bottom: 35px;
-        }
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40px 25px 20px;
+}
+
+.breadcrumb {
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.live-pill {
+  background: rgba(255,0,0,.12);
+  border: 1px solid rgba(255,0,0,.25);
+  color: #ff4444;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+      .wrap {
+  width: 100%;
+  padding-bottom: 35px;
+}
 
         h1 {
           color: #ff2222;
@@ -342,8 +366,25 @@ export default async function handler(req, res) {
 
     <main class="content">
       <div class="wrap">
-        <h1>🎥 JHECZ STREAM DASHBOARD</h1>
-        <div class="subtitle">PayPal + Stripe donation analytics</div>
+       <div class="hero">
+          
+            <div>
+              <div class="breadcrumb">
+                Dashboard
+              </div>
+          
+              <h1>🎥 JHECZ COMMAND CENTRE</h1>
+          
+              <div class="subtitle">
+                Live streaming analytics & supporter insights
+              </div>
+            </div>
+          
+            <div class="live-pill">
+              🔴 OFFLINE
+            </div>
+          
+          </div>
 
         <div class="grid">
           <div class="card ${mutedClass(todayAmount)}"><div class="title">Today</div><div class="value">${money(todayAmount)}</div></div>
